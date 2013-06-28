@@ -1,0 +1,26 @@
+*.keystore
+local.properties
+
+bin
+gen
+
+#Eclipse
+.classpath
+.project
+.settings
+
+#IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+out
+
+#emacs
+*~
+
+#maven
+target
