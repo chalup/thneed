@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
-public class OneToManyRelationship<TModel> implements Relationship<TModel> {
-
-  public final TModel mModel;
-  public final TModel mReferencedModel;
-  public final String mLinkedByColumn;
-
-  OneToManyRelationship(TModel model, TModel referencedModel, String linkedByColumn) {
-    mModel = model;
-    mReferencedModel = referencedModel;
-    mLinkedByColumn = linkedByColumn;
-  }
-
-  @Override
-  public void accept(RelationshipVisitor<? super TModel> visitor) {
-    visitor.visit(this);
-  }
+public interface ModelVisitor<T> {
+  void visit(T model);
 }

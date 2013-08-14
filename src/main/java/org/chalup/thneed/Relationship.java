@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
-public interface PolymorphicType<TModel, TSelf extends PolymorphicType<TModel, TSelf>> {
-  TModel getModel();
-  String getModelName();
+interface Relationship<T> {
+  void accept(RelationshipVisitor<? super T> visitor);
 }

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
-public class OneToOneRelationship<TModel> implements Relationship<TModel> {
+public class OneToManyRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
-  public final TModel mParentModel;
+  public final TModel mReferencedModel;
   public final String mLinkedByColumn;
 
-  OneToOneRelationship(TModel model, TModel parentModel, String linkedByColumn) {
+  OneToManyRelationship(TModel model, TModel referencedModel, String linkedByColumn) {
     mModel = model;
-    mParentModel = parentModel;
+    mReferencedModel = referencedModel;
     mLinkedByColumn = linkedByColumn;
   }
 

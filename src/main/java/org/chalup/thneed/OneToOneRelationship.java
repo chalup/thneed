@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
-interface Relationship<T> {
-  void accept(RelationshipVisitor<? super T> visitor);
+public class OneToOneRelationship<TModel> implements Relationship<TModel> {
+
+  public final TModel mModel;
+  public final TModel mParentModel;
+  public final String mLinkedByColumn;
+
+  OneToOneRelationship(TModel model, TModel parentModel, String linkedByColumn) {
+    mModel = model;
+    mParentModel = parentModel;
+    mLinkedByColumn = linkedByColumn;
+  }
+
+  @Override
+  public void accept(RelationshipVisitor<? super TModel> visitor) {
+    visitor.visit(this);
+  }
 }

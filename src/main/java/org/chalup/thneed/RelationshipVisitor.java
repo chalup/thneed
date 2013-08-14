@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
-public interface ModelVisitor<T> {
-  void visit(T model);
+public interface RelationshipVisitor<TModelInterface> {
+  void visit(OneToManyRelationship<? extends TModelInterface> relationship);
+
+  void visit(OneToOneRelationship<? extends TModelInterface> relationship);
+
+  void visit(RecursiveModelRelationship<? extends TModelInterface> relationship);
+
+  void visit(ManyToManyRelationship<? extends TModelInterface> relationship);
+
+  void visit(PolymorphicRelationship<? extends TModelInterface> relationship);
 }

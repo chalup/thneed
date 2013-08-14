@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed.tests;
+package org.chalup.thneed.tests;
 
-import com.chalup.thneed.PolymorphicType;
+import org.chalup.thneed.PolymorphicType;
 
 class TestData {
 

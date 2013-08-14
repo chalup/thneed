@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed;
+package org.chalup.thneed;
 
 public class ManyToManyRelationship<TModel> implements Relationship<TModel> {
 

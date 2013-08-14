@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed.tests;
+package org.chalup.thneed.tests;
 
-import static com.chalup.thneed.tests.TestData.CONTACT;
-import static com.chalup.thneed.tests.TestData.CONTACT_ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.chalup.thneed.ModelGraph;
-import com.chalup.thneed.RecursiveModelRelationship;
-import com.chalup.thneed.RelationshipVisitor;
-import com.chalup.thneed.tests.TestData.ModelInterface;
-
+import org.chalup.thneed.ModelGraph;
+import org.chalup.thneed.RecursiveModelRelationship;
+import org.chalup.thneed.RelationshipVisitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,23 +42,23 @@ public class RecursiveModelTest {
   }
 
   @Mock
-  RelationshipVisitor<ModelInterface> mockVisitor;
+  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<RecursiveModelRelationship<ModelInterface>> captor;
+  ArgumentCaptor<RecursiveModelRelationship<TestData.ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
         .where()
-        .the(CONTACT).groupsOther().by(CONTACT_ID)
+        .the(TestData.CONTACT).groupsOther().by(TestData.CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(CONTACT);
-    assertThat(relationship.mGroupByColumn).isEqualTo(CONTACT_ID);
+    RecursiveModelRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(TestData.CONTACT);
+    assertThat(relationship.mGroupByColumn).isEqualTo(TestData.CONTACT_ID);
   }
 }

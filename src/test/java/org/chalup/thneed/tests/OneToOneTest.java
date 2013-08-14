@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed.tests;
+package org.chalup.thneed.tests;
 
-import static com.chalup.thneed.tests.TestData.LEAD;
-import static com.chalup.thneed.tests.TestData.LEAD_ID;
-import static com.chalup.thneed.tests.TestData.Models.CONTACT_DATA;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.chalup.thneed.ModelGraph;
-import com.chalup.thneed.OneToOneRelationship;
-import com.chalup.thneed.RelationshipVisitor;
-import com.chalup.thneed.tests.TestData.ModelInterface;
-
+import org.chalup.thneed.ModelGraph;
+import org.chalup.thneed.OneToOneRelationship;
+import org.chalup.thneed.RelationshipVisitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,24 +42,24 @@ public class OneToOneTest {
   }
 
   @Mock
-  RelationshipVisitor<ModelInterface> mockVisitor;
+  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<OneToOneRelationship<ModelInterface>> captor;
+  ArgumentCaptor<OneToOneRelationship<TestData.ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
         .where()
-        .the(CONTACT_DATA).isPartOf(LEAD).identified().by(LEAD_ID)
+        .the(TestData.Models.CONTACT_DATA).isPartOf(TestData.LEAD).identified().by(TestData.LEAD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToOneRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(CONTACT_DATA);
-    assertThat(relationship.mParentModel).isEqualTo(LEAD);
-    assertThat(relationship.mLinkedByColumn).isEqualTo(LEAD_ID);
+    OneToOneRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(TestData.Models.CONTACT_DATA);
+    assertThat(relationship.mParentModel).isEqualTo(TestData.LEAD);
+    assertThat(relationship.mLinkedByColumn).isEqualTo(TestData.LEAD_ID);
   }
 }

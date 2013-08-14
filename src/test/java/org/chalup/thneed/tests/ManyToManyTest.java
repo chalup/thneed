@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.chalup.thneed.tests;
+package org.chalup.thneed.tests;
 
-import static com.chalup.thneed.tests.TestData.CONTACT;
-import static com.chalup.thneed.tests.TestData.CONTACT_ID;
-import static com.chalup.thneed.tests.TestData.DEAL;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.chalup.thneed.ModelGraph;
-import com.chalup.thneed.OneToManyRelationship;
-import com.chalup.thneed.RelationshipVisitor;
-import com.chalup.thneed.tests.TestData.ModelInterface;
-
+import org.chalup.thneed.ManyToManyRelationship;
+import org.chalup.thneed.ModelGraph;
+import org.chalup.thneed.RelationshipVisitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +34,7 @@ import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class OneToManyTest {
+public class ManyToManyTest {
 
   @Before
   public void init() {
@@ -47,26 +42,24 @@ public class OneToManyTest {
   }
 
   @Mock
-  RelationshipVisitor<ModelInterface> mockVisitor;
+  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<OneToManyRelationship<ModelInterface>> captor;
+  ArgumentCaptor<ManyToManyRelationship<TestData.ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
         .where()
-        .the(DEAL)
-        .references(CONTACT)
-        .by(CONTACT_ID)
+        .the(TestData.Models.CUSTOM_FIELD_VALUE)
+        .links(TestData.CONTACT).by(TestData.SUBJECT_ID)
+        .with(TestData.Models.CUSTOM_FIELD).by(TestData.CUSTOM_FIELD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(DEAL);
-    assertThat(relationship.mReferencedModel).isEqualTo(CONTACT);
-    assertThat(relationship.mLinkedByColumn).isEqualTo(CONTACT_ID);
+    ManyToManyRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(TestData.Models.CUSTOM_FIELD_VALUE);
   }
 }
