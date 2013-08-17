@@ -88,6 +88,18 @@ mvn clean package
 ```
 in directory with pom.xml.
 
+Download
+--------
+Download [jar](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.chalup.thneed&a=thneed&v=LATEST) or add the dependency to your pom.xml:
+
+```xml
+<dependency>
+  <groupId>org.chalup.thneed</groupId>
+  <artifactId>thneed</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+
 License
 -------
 
