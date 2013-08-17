@@ -80,6 +80,14 @@ Caveats
 * The API is subject to **heavy** change. This is more of a draft of the proof of concept than a production ready library.
 * The Visitors from the code snippets above are not implemented anywhere (yet). They are just names suggesting how you can use the information about data model relationships to reduce boilerplate code.
 
+Building
+--------
+This is standard maven project. To build it just execute:
+```shell
+mvn clean package
+```
+in directory with pom.xml.
+
 License
 -------
 
