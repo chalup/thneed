@@ -56,15 +56,15 @@ public class OneToOneTest {
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .where()
-        .the(CONTACT_DATA).isPartOf(LEAD).identified().by(LEAD_ID)
+        .the(LEAD).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
     OneToOneRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(CONTACT_DATA);
-    assertThat(relationship.mParentModel).isEqualTo(LEAD);
+    assertThat(relationship.mModel).isEqualTo(LEAD);
+    assertThat(relationship.mLinkedModel).isEqualTo(CONTACT_DATA);
     assertThat(relationship.mLinkedByColumn).isEqualTo(LEAD_ID);
   }
 
@@ -73,7 +73,7 @@ public class OneToOneTest {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(ID)
         .where()
-        .the(CONTACT_DATA).isPartOf(LEAD).identified().by(LEAD_ID)
+        .the(LEAD).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
         .build();
 
     graph.accept(mockVisitor);

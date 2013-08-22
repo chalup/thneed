@@ -80,7 +80,7 @@ public class ModelGraph<TModel> {
         mRelationships.add(relationship);
         mModels.add(relationship.mModel);
 
-        mModels.add(relationship.mParentModel);
+        mModels.add(relationship.mLinkedModel);
       }
 
       @Override
@@ -137,8 +137,8 @@ public class ModelGraph<TModel> {
           mModel = model;
         }
 
-        public OneToOneRelationshipBuilder isPartOf(TModel parentModel) {
-          return new OneToOneRelationshipBuilder(parentModel, mDefaultIdColumn);
+        public OneToOneRelationshipBuilder mayHave(TModel linkedModel) {
+          return new OneToOneRelationshipBuilder(linkedModel, mDefaultIdColumn);
         }
 
         public ColumnSelector<RelationshipAdder> groupsOther() {
@@ -231,19 +231,19 @@ public class ModelGraph<TModel> {
         }
 
         public class OneToOneRelationshipBuilder {
-          private final TModel mParentModel;
+          private final TModel mLinkedModel;
           private final String mParentModelIdColumn;
 
-          private OneToOneRelationshipBuilder(TModel parentModel, String parentModelIdColumn) {
-            mParentModel = parentModel;
+          private OneToOneRelationshipBuilder(TModel linkedModel, String parentModelIdColumn) {
+            mLinkedModel = linkedModel;
             mParentModelIdColumn = parentModelIdColumn;
           }
 
-          public ColumnSelector<RelationshipAdder> identified() {
+          public ColumnSelector<RelationshipAdder> linked() {
             return new ColumnSelector<RelationshipAdder>() {
               @Override
               public RelationshipAdder by(String columnName) {
-                new OneToOneRelationship<TModel>(mModel, mParentModel, mParentModelIdColumn, columnName).accept(mRelationshipVisitor);
+                new OneToOneRelationship<TModel>(mModel, mLinkedModel, mParentModelIdColumn, columnName).accept(mRelationshipVisitor);
 
                 return RelationshipAdder.this;
               }

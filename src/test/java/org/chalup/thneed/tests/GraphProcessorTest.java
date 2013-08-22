@@ -80,7 +80,7 @@ public class GraphProcessorTest {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
         .where()
-        .the(CONTACT_DATA).isPartOf(LEAD).identified().by(LEAD_ID)
+        .the(LEAD).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
         .build();
 
     graph.accept(mockProcessor);
