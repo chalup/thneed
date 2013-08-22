@@ -80,4 +80,19 @@ public class RecursiveModelTest {
     RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
     assertThat(relationship.mModelIdColumn).isEqualTo(ID);
   }
+
+  @Test
+  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(ID)
+        .where()
+        .the(CONTACT).identified().by(ID).groupsOther().by(CONTACT_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModelIdColumn).isEqualTo(ID);
+  }
 }

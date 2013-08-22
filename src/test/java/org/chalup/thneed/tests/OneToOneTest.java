@@ -82,4 +82,18 @@ public class OneToOneTest {
     OneToOneRelationship<ModelInterface> relationship = captor.getValue();
     assertThat(relationship.mParentModelIdColumn).isEqualTo(ID);
   }
+
+  @Test
+  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .where()
+        .the(LEAD).identified().by(ID).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    OneToOneRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mParentModelIdColumn).isEqualTo(ID);
+  }
 }

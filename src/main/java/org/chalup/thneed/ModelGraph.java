@@ -117,117 +117,49 @@ public class ModelGraph<TModel> {
       return this;
     }
 
-    public RelationshipAdder where() {
-      return new RelationshipAdder();
+    public RelationshipAdder<TModel> where() {
+      return new RelationshipAdder<TModel>(this);
     }
 
-    public class RelationshipAdder {
-      public RelationshipBuilder the(TModel model) {
-        return new RelationshipBuilder(model);
+    public static class RelationshipAdder<TModel> {
+      private final Builder<TModel> mBuilder;
+
+      private RelationshipAdder(Builder<TModel> builder) {
+        mBuilder = builder;
+      }
+
+      public RelationshipBuilder<TModel> the(TModel model) {
+        return new RelationshipBuilder<TModel>(this, model);
       }
 
       public ModelGraph<TModel> build() {
-        return Builder.this.build();
+        return mBuilder.build();
       }
 
-      public class RelationshipBuilder {
-        private final TModel mModel;
+      public static class OneToOneAndRecursiveRelationshipsBuilder<TModel> {
+        protected final RelationshipAdder<TModel> mRelationshipAdder;
+        protected final TModel mModel;
+        protected String mModelIdColumn;
 
-        private RelationshipBuilder(TModel model) {
+        private OneToOneAndRecursiveRelationshipsBuilder(RelationshipAdder<TModel> relationshipAdder, TModel model) {
+          mRelationshipAdder = relationshipAdder;
           mModel = model;
+          mModelIdColumn = relationshipAdder.mBuilder.mDefaultIdColumn;
         }
 
         public OneToOneRelationshipBuilder mayHave(TModel linkedModel) {
-          return new OneToOneRelationshipBuilder(linkedModel, mDefaultIdColumn);
+          return new OneToOneRelationshipBuilder(linkedModel, mModelIdColumn);
         }
 
-        public ColumnSelector<RelationshipAdder> groupsOther() {
-          return new ColumnSelector<RelationshipAdder>() {
+        public ColumnSelector<RelationshipAdder<TModel>> groupsOther() {
+          return new ColumnSelector<RelationshipAdder<TModel>>() {
             @Override
-            public RelationshipAdder by(String columnName) {
-              new RecursiveModelRelationship<TModel>(mModel, mDefaultIdColumn, columnName).accept(mRelationshipVisitor);
+            public RelationshipAdder<TModel> by(String columnName) {
+              new RecursiveModelRelationship<TModel>(mModel, mModelIdColumn, columnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
 
-              return RelationshipAdder.this;
+              return mRelationshipAdder;
             }
           };
-        }
-
-        public ColumnSelector<RelationshipAdder> references(final TModel model) {
-          return new ColumnSelector<RelationshipAdder>() {
-            @Override
-            public RelationshipAdder by(String columnName) {
-              new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName).accept(mRelationshipVisitor);
-
-              return RelationshipAdder.this;
-            }
-          };
-        }
-
-        public PolymorphicColumnSelector<RelationshipAdder> references(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
-          return new PolymorphicColumnSelector<RelationshipAdder>() {
-            @Override
-            public RelationshipAdder by(String typeColumnName, String idColumnName) {
-              new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName).accept(mRelationshipVisitor);
-
-              return RelationshipAdder.this;
-            }
-          };
-        }
-
-        public ColumnSelector<ManyToManyRelationshipBuilder> links(final TModel model) {
-          return new ColumnSelector<ManyToManyRelationshipBuilder>() {
-
-            @Override
-            public ManyToManyRelationshipBuilder by(String columnName) {
-              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName));
-            }
-          };
-        }
-
-        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder> links(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
-          return new PolymorphicColumnSelector<ManyToManyRelationshipBuilder>() {
-
-            @Override
-            public ManyToManyRelationshipBuilder by(String typeColumnName, String idColumnName) {
-              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName));
-            }
-          };
-        }
-
-        public class ManyToManyRelationshipBuilder {
-          private final Relationship<TModel> mLeftRelationship;
-
-          private ManyToManyRelationshipBuilder(Relationship<TModel> leftRelationship) {
-            mLeftRelationship = leftRelationship;
-          }
-
-          public ColumnSelector<RelationshipAdder> with(final TModel model) {
-            return new ColumnSelector<RelationshipAdder>() {
-
-              @Override
-              public RelationshipAdder by(String columnName) {
-                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName);
-
-                new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipVisitor);
-
-                return RelationshipAdder.this;
-              }
-            };
-          }
-
-          public PolymorphicColumnSelector<RelationshipAdder> with(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
-            return new PolymorphicColumnSelector<RelationshipAdder>() {
-
-              @Override
-              public RelationshipAdder by(String typeColumnName, String idColumnName) {
-                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName);
-
-                new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipVisitor);
-
-                return RelationshipAdder.this;
-              }
-            };
-          }
         }
 
         public class OneToOneRelationshipBuilder {
@@ -239,17 +171,119 @@ public class ModelGraph<TModel> {
             mParentModelIdColumn = parentModelIdColumn;
           }
 
-          public ColumnSelector<RelationshipAdder> linked() {
-            return new ColumnSelector<RelationshipAdder>() {
+          public ColumnSelector<RelationshipAdder<TModel>> linked() {
+            return new ColumnSelector<RelationshipAdder<TModel>>() {
               @Override
-              public RelationshipAdder by(String columnName) {
-                new OneToOneRelationship<TModel>(mModel, mLinkedModel, mParentModelIdColumn, columnName).accept(mRelationshipVisitor);
+              public RelationshipAdder<TModel> by(String columnName) {
+                new OneToOneRelationship<TModel>(mModel, mLinkedModel, mParentModelIdColumn, columnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
 
-                return RelationshipAdder.this;
+                return mRelationshipAdder;
               }
             };
           }
         }
+      }
+
+      public static class OneToOneAndRecursiveRelationshipsBuilderWithDefaultIdColumn<TModel> extends OneToOneAndRecursiveRelationshipsBuilder<TModel> {
+        private OneToOneAndRecursiveRelationshipsBuilderWithDefaultIdColumn(RelationshipAdder<TModel> relationshipAdder, TModel model) {
+          super(relationshipAdder, model);
+        }
+
+        public ColumnSelector<OneToOneAndRecursiveRelationshipsBuilder<TModel>> identified() {
+          return new ColumnSelector<OneToOneAndRecursiveRelationshipsBuilder<TModel>>() {
+            @Override
+            public OneToOneAndRecursiveRelationshipsBuilder<TModel> by(String columnName) {
+              mModelIdColumn = columnName;
+
+              return OneToOneAndRecursiveRelationshipsBuilderWithDefaultIdColumn.this;
+            }
+          };
+        }
+      }
+
+      public static class RelationshipBuilder<TModel> extends OneToOneAndRecursiveRelationshipsBuilderWithDefaultIdColumn<TModel> {
+        private RelationshipBuilder(RelationshipAdder<TModel> relationshipAdder, TModel model) {
+          super(relationshipAdder, model);
+        }
+
+        public ColumnSelector<RelationshipAdder<TModel>> references(final TModel model) {
+          return new ColumnSelector<RelationshipAdder<TModel>>() {
+            @Override
+            public RelationshipAdder<TModel> by(String columnName) {
+              new OneToManyRelationship<TModel>(mModel, model, mRelationshipAdder.mBuilder.mDefaultIdColumn, columnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+              return mRelationshipAdder;
+            }
+          };
+        }
+
+        public PolymorphicColumnSelector<RelationshipAdder<TModel>> references(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
+            @Override
+            public RelationshipAdder<TModel> by(String typeColumnName, String idColumnName) {
+              new PolymorphicRelationship<TModel>(mModel, models, mRelationshipAdder.mBuilder.mDefaultIdColumn, typeColumnName, idColumnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+              return mRelationshipAdder;
+            }
+          };
+        }
+
+        public ColumnSelector<ManyToManyRelationshipBuilder> links(final TModel model) {
+          return new ColumnSelector<ManyToManyRelationshipBuilder>() {
+
+            @Override
+            public ManyToManyRelationshipBuilder by(String columnName) {
+              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mRelationshipAdder.mBuilder.mDefaultIdColumn, columnName));
+            }
+          };
+        }
+
+        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder> links(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          return new PolymorphicColumnSelector<ManyToManyRelationshipBuilder>() {
+
+            @Override
+            public ManyToManyRelationshipBuilder by(String typeColumnName, String idColumnName) {
+              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mRelationshipAdder.mBuilder.mDefaultIdColumn, typeColumnName, idColumnName));
+            }
+          };
+        }
+
+        public class ManyToManyRelationshipBuilder {
+          private final Relationship<TModel> mLeftRelationship;
+
+          private ManyToManyRelationshipBuilder(Relationship<TModel> leftRelationship) {
+            mLeftRelationship = leftRelationship;
+          }
+
+          public ColumnSelector<RelationshipAdder<TModel>> with(final TModel model) {
+            return new ColumnSelector<RelationshipAdder<TModel>>() {
+
+              @Override
+              public RelationshipAdder<TModel> by(String columnName) {
+                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, mRelationshipAdder.mBuilder.mDefaultIdColumn, columnName);
+
+                new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+                return mRelationshipAdder;
+              }
+            };
+          }
+
+          public PolymorphicColumnSelector<RelationshipAdder<TModel>> with(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+            return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
+
+              @Override
+              public RelationshipAdder<TModel> by(String typeColumnName, String idColumnName) {
+                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, mRelationshipAdder.mBuilder.mDefaultIdColumn, typeColumnName, idColumnName);
+
+                new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+                return mRelationshipAdder;
+              }
+            };
+          }
+        }
+
       }
     }
   }
