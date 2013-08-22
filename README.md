@@ -8,6 +8,7 @@ A library for defining the traversable hierarchy of data models.
 
 ```java
 ModelGraph<DataModel> graph = ModelGraph.of(DataModel.class)
+  .identifiedByDefault().by(BaseColumns._ID)
   .with(ANNOUNCEMENT)
   .where()
   .the(VENDOR).references(TRACK).by(Vendors.TRACK_ID)
