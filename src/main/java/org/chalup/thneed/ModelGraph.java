@@ -249,12 +249,33 @@ public class ModelGraph<TModel> {
           };
         }
 
+        public ManyToManyRelationshipWithCustomIdBuilder<TModel> links(String modelIdColumn) {
+          mModelIdColumn = modelIdColumn;
+          return new ManyToManyRelationshipWithCustomIdBuilder<TModel>(this);
+        }
+
+        public static class ManyToManyRelationshipWithCustomIdBuilder<TModel> {
+          private final RelationshipBuilder<TModel> mRelationshipBuilder;
+
+          private ManyToManyRelationshipWithCustomIdBuilder(RelationshipBuilder<TModel> relationshipBuilder) {
+            mRelationshipBuilder = relationshipBuilder;
+          }
+
+          public ColumnSelector<RelationshipBuilder<TModel>.ManyToManyRelationshipBuilder> in(final TModel model) {
+            return mRelationshipBuilder.links(model);
+          }
+
+          public PolymorphicColumnSelector<RelationshipBuilder<TModel>.ManyToManyRelationshipBuilder> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+            return mRelationshipBuilder.links(models);
+          }
+        }
+
         public ColumnSelector<ManyToManyRelationshipBuilder> links(final TModel model) {
           return new ColumnSelector<ManyToManyRelationshipBuilder>() {
 
             @Override
             public ManyToManyRelationshipBuilder by(String columnName) {
-              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mRelationshipAdder.mBuilder.mDefaultIdColumn, columnName));
+              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mModelIdColumn, columnName));
             }
           };
         }
@@ -264,16 +285,39 @@ public class ModelGraph<TModel> {
 
             @Override
             public ManyToManyRelationshipBuilder by(String typeColumnName, String idColumnName) {
-              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mRelationshipAdder.mBuilder.mDefaultIdColumn, typeColumnName, idColumnName));
+              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mModelIdColumn, typeColumnName, idColumnName));
             }
           };
         }
 
         public class ManyToManyRelationshipBuilder {
           private final Relationship<TModel> mLeftRelationship;
+          private String mRightRelationshipModelIdColumn;
 
           private ManyToManyRelationshipBuilder(Relationship<TModel> leftRelationship) {
             mLeftRelationship = leftRelationship;
+            mRightRelationshipModelIdColumn = mRelationshipAdder.mBuilder.mDefaultIdColumn;
+          }
+
+          public WithCustomIdColumn with(String modelIdColumn) {
+            mRightRelationshipModelIdColumn = modelIdColumn;
+            return new WithCustomIdColumn(this);
+          }
+
+          public class WithCustomIdColumn {
+            private final ManyToManyRelationshipBuilder mManyToManyRelationshipBuilder;
+
+            private WithCustomIdColumn(ManyToManyRelationshipBuilder manyToManyRelationshipBuilder) {
+              mManyToManyRelationshipBuilder = manyToManyRelationshipBuilder;
+            }
+
+            public ColumnSelector<RelationshipAdder<TModel>> in(final TModel model) {
+              return mManyToManyRelationshipBuilder.with(model);
+            }
+
+            public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+              return mManyToManyRelationshipBuilder.with(models);
+            }
           }
 
           public ColumnSelector<RelationshipAdder<TModel>> with(final TModel model) {
@@ -281,7 +325,7 @@ public class ModelGraph<TModel> {
 
               @Override
               public RelationshipAdder<TModel> by(String columnName) {
-                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, mRelationshipAdder.mBuilder.mDefaultIdColumn, columnName);
+                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, mRightRelationshipModelIdColumn, columnName);
 
                 new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
 
@@ -295,7 +339,7 @@ public class ModelGraph<TModel> {
 
               @Override
               public RelationshipAdder<TModel> by(String typeColumnName, String idColumnName) {
-                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, mRelationshipAdder.mBuilder.mDefaultIdColumn, typeColumnName, idColumnName);
+                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, mRightRelationshipModelIdColumn, typeColumnName, idColumnName);
 
                 new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
 
