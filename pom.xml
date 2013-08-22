@@ -10,7 +10,7 @@
   <groupId>org.chalup.thneed</groupId>
   <artifactId>thneed</artifactId>
   <packaging>jar</packaging>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
 
   <name>thneed</name>
   <description>A library for defining the traversable hierarchy of data models.</description>
@@ -21,7 +21,7 @@
     <url>https://github.com/chalup/thneed/</url>
     <connection>scm:git:git://github.com/chalup/thneed.git</connection>
     <developerConnection>scm:git:git@github.com:chalup/thneed.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>0.2</tag>
   </scm>
 
   <developers>
