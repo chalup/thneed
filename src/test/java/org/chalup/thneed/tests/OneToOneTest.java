@@ -62,4 +62,19 @@ public class OneToOneTest {
     assertThat(relationship.mParentModel).isEqualTo(TestData.LEAD);
     assertThat(relationship.mLinkedByColumn).isEqualTo(TestData.LEAD_ID);
   }
+
+  @Test
+  public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+        .identifiedByDefault().by(TestData.ID)
+        .where()
+        .the(TestData.Models.CONTACT_DATA).isPartOf(TestData.LEAD).identified().by(TestData.LEAD_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    OneToOneRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mParentModelIdColumn).isEqualTo(TestData.ID);
+  }
 }

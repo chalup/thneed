@@ -22,12 +22,14 @@ public class PolymorphicRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
   public final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> mTypes;
+  public final String mPolymorphicModelIdColumn;
   public final String mTypeColumnName;
   public final String mIdColumnName;
 
-  PolymorphicRelationship(TModel model, ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> types, String typeColumnName, String idColumnName) {
+  PolymorphicRelationship(TModel model, ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> types, String polymorphicModelIdColumn, String typeColumnName, String idColumnName) {
     mModel = model;
     mTypes = types;
+    mPolymorphicModelIdColumn = polymorphicModelIdColumn;
     mTypeColumnName = typeColumnName;
     mIdColumnName = idColumnName;
   }

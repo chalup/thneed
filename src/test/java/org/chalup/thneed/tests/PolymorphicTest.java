@@ -65,4 +65,19 @@ public class PolymorphicTest {
     assertThat(relationship.mTypeColumnName).isEqualTo(TestData.TASKABLE_TYPE);
     assertThat(relationship.mIdColumnName).isEqualTo(TestData.TASKABLE_ID);
   }
+
+  @Test
+  public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+        .identifiedByDefault().by(TestData.ID)
+        .where()
+        .the(TestData.Models.TASK).references(ImmutableList.of(TestData.CONTACT, TestData.DEAL, TestData.LEAD)).by(TestData.TASKABLE_TYPE, TestData.TASKABLE_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    PolymorphicRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(TestData.ID);
+  }
 }

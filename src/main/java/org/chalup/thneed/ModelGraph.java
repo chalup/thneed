@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import android.provider.BaseColumns;
+
 import java.util.Collection;
 import java.util.Set;
 
@@ -44,8 +46,8 @@ public class ModelGraph<TModel> {
     }
   }
 
-  public static <TModel> Builder<TModel> of(Class<TModel> klass) {
-    return new Builder<TModel>();
+  public static <TModel> BuilderWithDefaultColumns<TModel> of(Class<TModel> klass) {
+    return new BuilderWithDefaultColumns<TModel>();
   }
 
   public static class Builder<TModel> {
@@ -60,6 +62,7 @@ public class ModelGraph<TModel> {
       TReturnType by(String typeColumnName, String typeColumnId);
     }
 
+    protected String mDefaultIdColumn = BaseColumns._ID;
     private final Set<TModel> mModels = Sets.newHashSet();
     private final Collection<Relationship<? extends TModel>> mRelationships = Lists.newArrayList();
 
@@ -135,14 +138,14 @@ public class ModelGraph<TModel> {
         }
 
         public OneToOneRelationshipBuilder isPartOf(TModel parentModel) {
-          return new OneToOneRelationshipBuilder(parentModel);
+          return new OneToOneRelationshipBuilder(parentModel, mDefaultIdColumn);
         }
 
         public ColumnSelector<RelationshipAdder> groupsOther() {
           return new ColumnSelector<RelationshipAdder>() {
             @Override
             public RelationshipAdder by(String columnName) {
-              new RecursiveModelRelationship<TModel>(mModel, columnName).accept(mRelationshipVisitor);
+              new RecursiveModelRelationship<TModel>(mModel, mDefaultIdColumn, columnName).accept(mRelationshipVisitor);
 
               return RelationshipAdder.this;
             }
@@ -153,7 +156,7 @@ public class ModelGraph<TModel> {
           return new ColumnSelector<RelationshipAdder>() {
             @Override
             public RelationshipAdder by(String columnName) {
-              new OneToManyRelationship<TModel>(mModel, model, columnName).accept(mRelationshipVisitor);
+              new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName).accept(mRelationshipVisitor);
 
               return RelationshipAdder.this;
             }
@@ -164,7 +167,7 @@ public class ModelGraph<TModel> {
           return new PolymorphicColumnSelector<RelationshipAdder>() {
             @Override
             public RelationshipAdder by(String typeColumnName, String idColumnName) {
-              new PolymorphicRelationship<TModel>(mModel, models, typeColumnName, idColumnName).accept(mRelationshipVisitor);
+              new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName).accept(mRelationshipVisitor);
 
               return RelationshipAdder.this;
             }
@@ -176,7 +179,7 @@ public class ModelGraph<TModel> {
 
             @Override
             public ManyToManyRelationshipBuilder by(String columnName) {
-              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, columnName));
+              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName));
             }
           };
         }
@@ -186,7 +189,7 @@ public class ModelGraph<TModel> {
 
             @Override
             public ManyToManyRelationshipBuilder by(String typeColumnName, String idColumnName) {
-              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, typeColumnName, idColumnName));
+              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName));
             }
           };
         }
@@ -203,7 +206,7 @@ public class ModelGraph<TModel> {
 
               @Override
               public RelationshipAdder by(String columnName) {
-                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, columnName);
+                Relationship<TModel> rightRelationship = new OneToManyRelationship<TModel>(mModel, model, mDefaultIdColumn, columnName);
 
                 new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipVisitor);
 
@@ -217,7 +220,7 @@ public class ModelGraph<TModel> {
 
               @Override
               public RelationshipAdder by(String typeColumnName, String idColumnName) {
-                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, typeColumnName, idColumnName);
+                Relationship<TModel> rightRelationship = new PolymorphicRelationship<TModel>(mModel, models, mDefaultIdColumn, typeColumnName, idColumnName);
 
                 new ManyToManyRelationship<TModel>(mModel, mLeftRelationship, rightRelationship).accept(mRelationshipVisitor);
 
@@ -229,16 +232,18 @@ public class ModelGraph<TModel> {
 
         public class OneToOneRelationshipBuilder {
           private final TModel mParentModel;
+          private final String mParentModelIdColumn;
 
-          private OneToOneRelationshipBuilder(TModel parentModel) {
+          private OneToOneRelationshipBuilder(TModel parentModel, String parentModelIdColumn) {
             mParentModel = parentModel;
+            mParentModelIdColumn = parentModelIdColumn;
           }
 
           public ColumnSelector<RelationshipAdder> identified() {
             return new ColumnSelector<RelationshipAdder>() {
               @Override
               public RelationshipAdder by(String columnName) {
-                new OneToOneRelationship<TModel>(mModel, mParentModel, columnName).accept(mRelationshipVisitor);
+                new OneToOneRelationship<TModel>(mModel, mParentModel, mParentModelIdColumn, columnName).accept(mRelationshipVisitor);
 
                 return RelationshipAdder.this;
               }
@@ -246,6 +251,19 @@ public class ModelGraph<TModel> {
           }
         }
       }
+    }
+  }
+
+  public static class BuilderWithDefaultColumns<TModel> extends Builder<TModel> {
+    public ColumnSelector<Builder<TModel>> identifiedByDefault() {
+      return new ColumnSelector<Builder<TModel>>() {
+        @Override
+        public Builder<TModel> by(String columnName) {
+          mDefaultIdColumn = columnName;
+
+          return BuilderWithDefaultColumns.this;
+        }
+      };
     }
   }
 }

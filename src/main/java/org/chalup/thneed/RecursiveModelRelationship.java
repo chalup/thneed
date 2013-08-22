@@ -19,10 +19,12 @@ package org.chalup.thneed;
 public class RecursiveModelRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
+  public final String mModelIdColumn;
   public final String mGroupByColumn;
 
-  RecursiveModelRelationship(TModel model, String groupByColumn) {
+  RecursiveModelRelationship(TModel model, String modelIdColumn, String groupByColumn) {
     mModel = model;
+    mModelIdColumn = modelIdColumn;
     mGroupByColumn = groupByColumn;
   }
 

@@ -20,11 +20,13 @@ public class OneToManyRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
   public final TModel mReferencedModel;
+  public final String mReferencedModelIdColumn;
   public final String mLinkedByColumn;
 
-  OneToManyRelationship(TModel model, TModel referencedModel, String linkedByColumn) {
+  OneToManyRelationship(TModel model, TModel referencedModel, String referencedModelIdColumn, String linkedByColumn) {
     mModel = model;
     mReferencedModel = referencedModel;
+    mReferencedModelIdColumn = referencedModelIdColumn;
     mLinkedByColumn = linkedByColumn;
   }
 

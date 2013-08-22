@@ -64,4 +64,21 @@ public class OneToManyTest {
     assertThat(relationship.mReferencedModel).isEqualTo(TestData.CONTACT);
     assertThat(relationship.mLinkedByColumn).isEqualTo(TestData.CONTACT_ID);
   }
+
+  @Test
+  public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
+    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+        .identifiedByDefault().by(TestData.ID)
+        .where()
+        .the(TestData.DEAL)
+        .references(TestData.CONTACT)
+        .by(TestData.CONTACT_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    OneToManyRelationship<TestData.ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(TestData.ID);
+  }
 }

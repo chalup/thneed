@@ -20,11 +20,13 @@ public class OneToOneRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
   public final TModel mParentModel;
+  public final String mParentModelIdColumn;
   public final String mLinkedByColumn;
 
-  OneToOneRelationship(TModel model, TModel parentModel, String linkedByColumn) {
+  OneToOneRelationship(TModel model, TModel parentModel, String parentModelIdColumn, String linkedByColumn) {
     mModel = model;
     mParentModel = parentModel;
+    mParentModelIdColumn = parentModelIdColumn;
     mLinkedByColumn = linkedByColumn;
   }
 
