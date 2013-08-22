@@ -35,16 +35,11 @@ import org.chalup.thneed.RelationshipVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PolymorphicTest {
 
   @Before

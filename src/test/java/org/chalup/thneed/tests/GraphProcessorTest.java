@@ -44,14 +44,9 @@ import org.chalup.thneed.ModelVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GraphProcessorTest {
 
   @Before
