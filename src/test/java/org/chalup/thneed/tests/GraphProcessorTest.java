@@ -16,12 +16,31 @@
 
 package org.chalup.thneed.tests;
 
+import static org.chalup.thneed.tests.TestData.CONTACT;
+import static org.chalup.thneed.tests.TestData.CONTACT_ID;
+import static org.chalup.thneed.tests.TestData.CUSTOM_FIELD_ID;
+import static org.chalup.thneed.tests.TestData.DEAL;
+import static org.chalup.thneed.tests.TestData.LEAD;
+import static org.chalup.thneed.tests.TestData.LEAD_ID;
+import static org.chalup.thneed.tests.TestData.Models.CONTACT_DATA;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD_VALUE;
+import static org.chalup.thneed.tests.TestData.Models.TAG;
+import static org.chalup.thneed.tests.TestData.Models.TAGGING;
+import static org.chalup.thneed.tests.TestData.Models.TASK;
+import static org.chalup.thneed.tests.TestData.SUBJECT_ID;
+import static org.chalup.thneed.tests.TestData.TAGGABLE_ID;
+import static org.chalup.thneed.tests.TestData.TAGGABLE_TYPE;
+import static org.chalup.thneed.tests.TestData.TAG_ID;
+import static org.chalup.thneed.tests.TestData.TASKABLE_ID;
+import static org.chalup.thneed.tests.TestData.TASKABLE_TYPE;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableList;
 
 import org.chalup.thneed.ModelGraph;
 import org.chalup.thneed.ModelVisitor;
+import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,151 +59,151 @@ public class GraphProcessorTest {
   }
 
   @Mock
-  ModelVisitor<TestData.ModelInterface> mockProcessor;
+  ModelVisitor<ModelInterface> mockProcessor;
 
   @Test
   public void shouldVisitEveryExplicitlyAddedModel() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
-        .with(TestData.CONTACT)
-        .with(TestData.DEAL)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
+        .with(CONTACT)
+        .with(DEAL)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
   }
 
   @Test
   public void shouldVisitEveryModelFromOneToOneRelationships() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.Models.CONTACT_DATA).isPartOf(TestData.LEAD).identified().by(TestData.LEAD_ID)
+        .the(CONTACT_DATA).isPartOf(LEAD).identified().by(LEAD_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.Models.CONTACT_DATA);
-    verify(mockProcessor).visit(TestData.LEAD);
+    verify(mockProcessor).visit(CONTACT_DATA);
+    verify(mockProcessor).visit(LEAD);
   }
 
   @Test
   public void shouldVisitEveryModelFromOneToManyRelationships() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.DEAL).references(TestData.CONTACT).by(TestData.CONTACT_ID)
+        .the(DEAL).references(CONTACT).by(CONTACT_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
   }
 
   @Test
   public void shouldVisitEveryModelFromRecursiveRelationships() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.CONTACT).groupsOther().by(TestData.CONTACT_ID)
+        .the(CONTACT).groupsOther().by(CONTACT_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.CONTACT);
+    verify(mockProcessor).visit(CONTACT);
   }
 
   @Test
   public void shouldVisitEveryModelFromManyToManyRelationships() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.Models.CUSTOM_FIELD_VALUE)
-        .links(TestData.CONTACT).by(TestData.SUBJECT_ID)
-        .with(TestData.Models.CUSTOM_FIELD).by(TestData.CUSTOM_FIELD_ID)
+        .the(CUSTOM_FIELD_VALUE)
+        .links(CONTACT).by(SUBJECT_ID)
+        .with(CUSTOM_FIELD).by(CUSTOM_FIELD_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.Models.CUSTOM_FIELD_VALUE);
-    verify(mockProcessor).visit(TestData.Models.CUSTOM_FIELD);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(CUSTOM_FIELD_VALUE);
+    verify(mockProcessor).visit(CUSTOM_FIELD);
   }
 
   @Test
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithFirstSidePolymorphic() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.Models.TAGGING)
-        .links(TestData.Models.TAG).by(TestData.TAG_ID)
-        .with(ImmutableList.of(TestData.CONTACT, TestData.DEAL, TestData.LEAD)).by(TestData.TAGGABLE_TYPE, TestData.TAGGABLE_ID)
+        .the(TAGGING)
+        .links(TAG).by(TAG_ID)
+        .with(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TAGGABLE_TYPE, TAGGABLE_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.Models.TAG);
-    verify(mockProcessor).visit(TestData.Models.TAGGING);
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
-    verify(mockProcessor).visit(TestData.LEAD);
+    verify(mockProcessor).visit(TAG);
+    verify(mockProcessor).visit(TAGGING);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
+    verify(mockProcessor).visit(LEAD);
   }
 
   @Test
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithSecondSidePolymorphic() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.Models.TAGGING)
-        .links(ImmutableList.of(TestData.CONTACT, TestData.DEAL, TestData.LEAD)).by(TestData.TAGGABLE_TYPE, TestData.TAGGABLE_ID)
-        .with(TestData.Models.TAG).by(TestData.TAG_ID)
+        .the(TAGGING)
+        .links(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TAGGABLE_TYPE, TAGGABLE_ID)
+        .with(TAG).by(TAG_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.Models.TAG);
-    verify(mockProcessor).visit(TestData.Models.TAGGING);
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
-    verify(mockProcessor).visit(TestData.LEAD);
+    verify(mockProcessor).visit(TAG);
+    verify(mockProcessor).visit(TAGGING);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
+    verify(mockProcessor).visit(LEAD);
   }
 
   @Test
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithBothSidesPolymorphic() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph
-        .of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph
+        .of(ModelInterface.class)
         .where()
-        .the(TestData.Models.TAGGING)
-        .links(ImmutableList.of(TestData.CONTACT, TestData.DEAL)).by(TestData.TAGGABLE_TYPE, TestData.TAGGABLE_ID)
-        .with(ImmutableList.of(TestData.CONTACT, TestData.LEAD)).by("LOL", "WUT?")
+        .the(TAGGING)
+        .links(ImmutableList.of(CONTACT, DEAL)).by(TAGGABLE_TYPE, TAGGABLE_ID)
+        .with(ImmutableList.of(CONTACT, LEAD)).by("LOL", "WUT?")
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.Models.TAGGING);
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
-    verify(mockProcessor).visit(TestData.LEAD);
+    verify(mockProcessor).visit(TAGGING);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
+    verify(mockProcessor).visit(LEAD);
   }
 
   @Test
   public void shouldVisitEveryModelFromPolymorphicRelationships() throws Exception {
 
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .where()
-        .the(TestData.Models.TASK)
-        .references(ImmutableList.of(TestData.CONTACT, TestData.DEAL, TestData.LEAD))
-        .by(TestData.TASKABLE_TYPE, TestData.TASKABLE_ID)
+        .the(TASK)
+        .references(ImmutableList.of(CONTACT, DEAL, LEAD))
+        .by(TASKABLE_TYPE, TASKABLE_ID)
         .build();
 
     graph.accept(mockProcessor);
 
-    verify(mockProcessor).visit(TestData.Models.TASK);
-    verify(mockProcessor).visit(TestData.CONTACT);
-    verify(mockProcessor).visit(TestData.DEAL);
-    verify(mockProcessor).visit(TestData.LEAD);
+    verify(mockProcessor).visit(TASK);
+    verify(mockProcessor).visit(CONTACT);
+    verify(mockProcessor).visit(DEAL);
+    verify(mockProcessor).visit(LEAD);
   }
 }

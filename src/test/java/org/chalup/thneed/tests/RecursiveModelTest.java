@@ -16,12 +16,16 @@
 
 package org.chalup.thneed.tests;
 
+import static org.chalup.thneed.tests.TestData.CONTACT;
+import static org.chalup.thneed.tests.TestData.CONTACT_ID;
+import static org.chalup.thneed.tests.TestData.ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.chalup.thneed.ModelGraph;
 import org.chalup.thneed.RecursiveModelRelationship;
 import org.chalup.thneed.RelationshipVisitor;
+import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,38 +46,38 @@ public class RecursiveModelTest {
   }
 
   @Mock
-  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
+  RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<RecursiveModelRelationship<TestData.ModelInterface>> captor;
+  ArgumentCaptor<RecursiveModelRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .where()
-        .the(TestData.CONTACT).groupsOther().by(TestData.CONTACT_ID)
+        .the(CONTACT).groupsOther().by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    RecursiveModelRelationship<TestData.ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(TestData.CONTACT);
-    assertThat(relationship.mGroupByColumn).isEqualTo(TestData.CONTACT_ID);
+    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(CONTACT);
+    assertThat(relationship.mGroupByColumn).isEqualTo(CONTACT_ID);
   }
 
   @Test
   public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
-        .identifiedByDefault().by(TestData.ID)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(ID)
         .where()
-        .the(TestData.CONTACT).groupsOther().by(TestData.CONTACT_ID)
+        .the(CONTACT).groupsOther().by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    RecursiveModelRelationship<TestData.ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModelIdColumn).isEqualTo(TestData.ID);
+    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModelIdColumn).isEqualTo(ID);
   }
 }

@@ -16,12 +16,18 @@
 
 package org.chalup.thneed.tests;
 
+import static org.chalup.thneed.tests.TestData.CONTACT;
+import static org.chalup.thneed.tests.TestData.CUSTOM_FIELD_ID;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD_VALUE;
+import static org.chalup.thneed.tests.TestData.SUBJECT_ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.chalup.thneed.ManyToManyRelationship;
 import org.chalup.thneed.ModelGraph;
 import org.chalup.thneed.RelationshipVisitor;
+import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,24 +48,24 @@ public class ManyToManyTest {
   }
 
   @Mock
-  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
+  RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<ManyToManyRelationship<TestData.ModelInterface>> captor;
+  ArgumentCaptor<ManyToManyRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .where()
-        .the(TestData.Models.CUSTOM_FIELD_VALUE)
-        .links(TestData.CONTACT).by(TestData.SUBJECT_ID)
-        .with(TestData.Models.CUSTOM_FIELD).by(TestData.CUSTOM_FIELD_ID)
+        .the(CUSTOM_FIELD_VALUE)
+        .links(CONTACT).by(SUBJECT_ID)
+        .with(CUSTOM_FIELD).by(CUSTOM_FIELD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    ManyToManyRelationship<TestData.ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(TestData.Models.CUSTOM_FIELD_VALUE);
+    ManyToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(CUSTOM_FIELD_VALUE);
   }
 }

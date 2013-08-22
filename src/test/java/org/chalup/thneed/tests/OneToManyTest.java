@@ -16,12 +16,17 @@
 
 package org.chalup.thneed.tests;
 
+import static org.chalup.thneed.tests.TestData.CONTACT;
+import static org.chalup.thneed.tests.TestData.CONTACT_ID;
+import static org.chalup.thneed.tests.TestData.DEAL;
+import static org.chalup.thneed.tests.TestData.ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.chalup.thneed.ModelGraph;
 import org.chalup.thneed.OneToManyRelationship;
 import org.chalup.thneed.RelationshipVisitor;
+import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,43 +47,43 @@ public class OneToManyTest {
   }
 
   @Mock
-  RelationshipVisitor<TestData.ModelInterface> mockVisitor;
+  RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<OneToManyRelationship<TestData.ModelInterface>> captor;
+  ArgumentCaptor<OneToManyRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .where()
-        .the(TestData.DEAL)
-        .references(TestData.CONTACT)
-        .by(TestData.CONTACT_ID)
+        .the(DEAL)
+        .references(CONTACT)
+        .by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToManyRelationship<TestData.ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(TestData.DEAL);
-    assertThat(relationship.mReferencedModel).isEqualTo(TestData.CONTACT);
-    assertThat(relationship.mLinkedByColumn).isEqualTo(TestData.CONTACT_ID);
+    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(DEAL);
+    assertThat(relationship.mReferencedModel).isEqualTo(CONTACT);
+    assertThat(relationship.mLinkedByColumn).isEqualTo(CONTACT_ID);
   }
 
   @Test
   public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
-    ModelGraph<TestData.ModelInterface> graph = ModelGraph.of(TestData.ModelInterface.class)
-        .identifiedByDefault().by(TestData.ID)
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(ID)
         .where()
-        .the(TestData.DEAL)
-        .references(TestData.CONTACT)
-        .by(TestData.CONTACT_ID)
+        .the(DEAL)
+        .references(CONTACT)
+        .by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToManyRelationship<TestData.ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(TestData.ID);
+    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(ID);
   }
 }
