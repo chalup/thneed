@@ -20,8 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import android.provider.BaseColumns;
-
 import java.util.Collection;
 import java.util.Set;
 
@@ -46,23 +44,24 @@ public class ModelGraph<TModel> {
     }
   }
 
-  public static <TModel> BuilderWithDefaultColumns<TModel> of(Class<TModel> klass) {
-    return new BuilderWithDefaultColumns<TModel>();
+  public static <TModel> DefaultIdColumnSelector<TModel> of(Class<TModel> klass) {
+    return new DefaultIdColumnSelector<TModel>();
+  }
+
+  public interface ColumnSelector<TReturnType> {
+    TReturnType by(String columnName);
   }
 
   public static class Builder<TModel> {
-    private Builder() {
-    }
-
-    public interface ColumnSelector<TReturnType> {
-      TReturnType by(String columnName);
+    private Builder(String defaultColumnName) {
+      mDefaultIdColumn = defaultColumnName;
     }
 
     public interface PolymorphicColumnSelector<TReturnType> {
       TReturnType by(String typeColumnName, String typeColumnId);
     }
 
-    protected String mDefaultIdColumn = BaseColumns._ID;
+    protected final String mDefaultIdColumn;
     private final Set<TModel> mModels = Sets.newHashSet();
     private final Collection<Relationship<? extends TModel>> mRelationships = Lists.newArrayList();
 
@@ -352,14 +351,12 @@ public class ModelGraph<TModel> {
     }
   }
 
-  public static class BuilderWithDefaultColumns<TModel> extends Builder<TModel> {
+  public static class DefaultIdColumnSelector<TModel> {
     public ColumnSelector<Builder<TModel>> identifiedByDefault() {
       return new ColumnSelector<Builder<TModel>>() {
         @Override
         public Builder<TModel> by(String columnName) {
-          mDefaultIdColumn = columnName;
-
-          return BuilderWithDefaultColumns.this;
+          return new Builder<TModel>(columnName);
         }
       };
     }

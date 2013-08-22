@@ -23,6 +23,7 @@ import static org.chalup.thneed.tests.TestData.LEAD;
 import static org.chalup.thneed.tests.TestData.Models.TASK;
 import static org.chalup.thneed.tests.TestData.TASKABLE_ID;
 import static org.chalup.thneed.tests.TestData.TASKABLE_TYPE;
+import static org.chalup.thneed.tests.TestData._ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -60,6 +61,7 @@ public class PolymorphicTest {
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TASK).references(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
         .build();
@@ -72,26 +74,13 @@ public class PolymorphicTest {
     assertThat(relationship.mModel).isEqualTo(TASK);
     assertThat(relationship.mTypeColumnName).isEqualTo(TASKABLE_TYPE);
     assertThat(relationship.mIdColumnName).isEqualTo(TASKABLE_ID);
-  }
-
-  @Test
-  public void shouldUseSpecifiedDefaultIdColumn() throws Exception {
-    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
-        .identifiedByDefault().by(ID)
-        .where()
-        .the(TASK).references(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
-        .build();
-
-    graph.accept(mockVisitor);
-
-    verify(mockVisitor).visit(captor.capture());
-    PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(ID);
+    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(_ID);
   }
 
   @Test
   public void shouldUseRelationshipSpecificIdColumn() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TASK).references(ID).in(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
         .build();

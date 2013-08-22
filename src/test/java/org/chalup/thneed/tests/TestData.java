@@ -20,6 +20,7 @@ import org.chalup.thneed.PolymorphicType;
 
 class TestData {
 
+  static final String _ID = "_id";
   static final String ID = "id";
 
   static final String LEAD_ID = "lead_id";

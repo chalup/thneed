@@ -21,6 +21,7 @@ import static org.chalup.thneed.tests.TestData.CUSTOM_FIELD_ID;
 import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD;
 import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD_VALUE;
 import static org.chalup.thneed.tests.TestData.SUBJECT_ID;
+import static org.chalup.thneed.tests.TestData._ID;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -56,6 +57,7 @@ public class ManyToManyTest {
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(CUSTOM_FIELD_VALUE)
         .links(CONTACT).by(SUBJECT_ID)

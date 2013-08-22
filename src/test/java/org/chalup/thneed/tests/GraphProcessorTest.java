@@ -34,6 +34,7 @@ import static org.chalup.thneed.tests.TestData.TAGGABLE_TYPE;
 import static org.chalup.thneed.tests.TestData.TAG_ID;
 import static org.chalup.thneed.tests.TestData.TASKABLE_ID;
 import static org.chalup.thneed.tests.TestData.TASKABLE_TYPE;
+import static org.chalup.thneed.tests.TestData._ID;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableList;
@@ -65,6 +66,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryExplicitlyAddedModel() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .with(CONTACT)
         .with(DEAL)
         .build();
@@ -79,6 +81,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromOneToOneRelationships() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(LEAD).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
         .build();
@@ -93,6 +96,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromOneToManyRelationships() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(DEAL).references(CONTACT).by(CONTACT_ID)
         .build();
@@ -107,6 +111,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromRecursiveRelationships() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(CONTACT).groupsOther().by(CONTACT_ID)
         .build();
@@ -120,6 +125,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromManyToManyRelationships() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(CUSTOM_FIELD_VALUE)
         .links(CONTACT).by(SUBJECT_ID)
@@ -137,6 +143,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithFirstSidePolymorphic() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TAGGING)
         .links(TAG).by(TAG_ID)
@@ -156,6 +163,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithSecondSidePolymorphic() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TAGGING)
         .links(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TAGGABLE_TYPE, TAGGABLE_ID)
@@ -175,6 +183,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromManyToManyRelationshipsWithBothSidesPolymorphic() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph
         .of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TAGGING)
         .links(ImmutableList.of(CONTACT, DEAL)).by(TAGGABLE_TYPE, TAGGABLE_ID)
@@ -193,6 +202,7 @@ public class GraphProcessorTest {
   public void shouldVisitEveryModelFromPolymorphicRelationships() throws Exception {
 
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
         .where()
         .the(TASK)
         .references(ImmutableList.of(CONTACT, DEAL, LEAD))
