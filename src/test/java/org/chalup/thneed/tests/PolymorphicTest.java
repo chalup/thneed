@@ -88,4 +88,18 @@ public class PolymorphicTest {
     PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
     assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(ID);
   }
+
+  @Test
+  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .where()
+        .the(TASK).references(ID).in(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(ID);
+  }
 }

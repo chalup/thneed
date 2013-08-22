@@ -86,4 +86,21 @@ public class OneToManyTest {
     OneToManyRelationship<ModelInterface> relationship = captor.getValue();
     assertThat(relationship.mReferencedModelIdColumn).isEqualTo(ID);
   }
+
+  @Test
+  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .where()
+        .the(DEAL)
+        .references(ID)
+        .in(CONTACT)
+        .by(CONTACT_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(ID);
+  }
 }

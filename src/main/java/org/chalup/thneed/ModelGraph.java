@@ -217,6 +217,44 @@ public class ModelGraph<TModel> {
           };
         }
 
+        public OneToManyRelationshipWithCustomIdBuilder<TModel> references(String modelIdColumn) {
+          return new OneToManyRelationshipWithCustomIdBuilder<TModel>(modelIdColumn, mModel, mRelationshipAdder);
+        }
+
+        public static class OneToManyRelationshipWithCustomIdBuilder<TModel> {
+          private final String mModelIdColumn;
+          private final TModel mModel;
+          private final RelationshipAdder<TModel> mRelationshipAdder;
+
+          private OneToManyRelationshipWithCustomIdBuilder(String modelIdColumn, TModel model, RelationshipAdder<TModel> relationshipAdder) {
+            mModelIdColumn = modelIdColumn;
+            mModel = model;
+            mRelationshipAdder = relationshipAdder;
+          }
+
+          public ColumnSelector<RelationshipAdder<TModel>> in(final TModel model) {
+            return new ColumnSelector<RelationshipAdder<TModel>>() {
+              @Override
+              public RelationshipAdder<TModel> by(String columnName) {
+                new OneToManyRelationship<TModel>(mModel, model, mModelIdColumn, columnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+                return mRelationshipAdder;
+              }
+            };
+          }
+
+          public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+            return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
+              @Override
+              public RelationshipAdder<TModel> by(String typeColumnName, String idColumnName) {
+                new PolymorphicRelationship<TModel>(mModel, models, mModelIdColumn, typeColumnName, idColumnName).accept(mRelationshipAdder.mBuilder.mRelationshipVisitor);
+
+                return mRelationshipAdder;
+              }
+            };
+          }
+        }
+
         public PolymorphicColumnSelector<RelationshipAdder<TModel>> references(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
           return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
             @Override
