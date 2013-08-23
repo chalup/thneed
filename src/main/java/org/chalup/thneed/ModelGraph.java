@@ -260,53 +260,57 @@ public class ModelGraph<TModel> {
             mRelationshipBuilder = relationshipBuilder;
           }
 
-          public ColumnSelector<RelationshipBuilder<TModel>.ManyToManyRelationshipBuilder> in(final TModel model) {
+          public ColumnSelector<ManyToManyRelationshipBuilder<TModel>> in(final TModel model) {
             return mRelationshipBuilder.links(model);
           }
 
-          public PolymorphicColumnSelector<RelationshipBuilder<TModel>.ManyToManyRelationshipBuilder> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
             return mRelationshipBuilder.links(models);
           }
         }
 
-        public ColumnSelector<ManyToManyRelationshipBuilder> links(final TModel model) {
-          return new ColumnSelector<ManyToManyRelationshipBuilder>() {
+        public ColumnSelector<ManyToManyRelationshipBuilder<TModel>> links(final TModel model) {
+          return new ColumnSelector<ManyToManyRelationshipBuilder<TModel>>() {
 
             @Override
-            public ManyToManyRelationshipBuilder by(String columnName) {
-              return new ManyToManyRelationshipBuilder(new OneToManyRelationship<TModel>(mModel, model, mModelIdColumn, columnName));
+            public ManyToManyRelationshipBuilder<TModel> by(String columnName) {
+              return new ManyToManyRelationshipBuilder<TModel>(mModel, mRelationshipAdder, new OneToManyRelationship<TModel>(mModel, model, mModelIdColumn, columnName));
             }
           };
         }
 
-        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder> links(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
-          return new PolymorphicColumnSelector<ManyToManyRelationshipBuilder>() {
+        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> links(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          return new PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>>() {
 
             @Override
-            public ManyToManyRelationshipBuilder by(String typeColumnName, String idColumnName) {
-              return new ManyToManyRelationshipBuilder(new PolymorphicRelationship<TModel>(mModel, models, mModelIdColumn, typeColumnName, idColumnName));
+            public ManyToManyRelationshipBuilder<TModel> by(String typeColumnName, String idColumnName) {
+              return new ManyToManyRelationshipBuilder<TModel>(mModel, mRelationshipAdder, new PolymorphicRelationship<TModel>(mModel, models, mModelIdColumn, typeColumnName, idColumnName));
             }
           };
         }
 
-        public class ManyToManyRelationshipBuilder {
+        public static class ManyToManyRelationshipBuilder<TModel> {
           private final Relationship<TModel> mLeftRelationship;
+          private final RelationshipAdder<TModel> mRelationshipAdder;
           private String mRightRelationshipModelIdColumn;
+          private final TModel mModel;
 
-          private ManyToManyRelationshipBuilder(Relationship<TModel> leftRelationship) {
+          private ManyToManyRelationshipBuilder(TModel model, RelationshipAdder<TModel> relationshipAdder, Relationship<TModel> leftRelationship) {
+            mModel = model;
+            mRelationshipAdder = relationshipAdder;
             mLeftRelationship = leftRelationship;
             mRightRelationshipModelIdColumn = mRelationshipAdder.mBuilder.mDefaultIdColumn;
           }
 
-          public WithCustomIdColumn with(String modelIdColumn) {
+          public WithCustomIdColumn<TModel> with(String modelIdColumn) {
             mRightRelationshipModelIdColumn = modelIdColumn;
-            return new WithCustomIdColumn(this);
+            return new WithCustomIdColumn<TModel>(this);
           }
 
-          public class WithCustomIdColumn {
-            private final ManyToManyRelationshipBuilder mManyToManyRelationshipBuilder;
+          public static class WithCustomIdColumn<TModel> {
+            private final ManyToManyRelationshipBuilder<TModel> mManyToManyRelationshipBuilder;
 
-            private WithCustomIdColumn(ManyToManyRelationshipBuilder manyToManyRelationshipBuilder) {
+            private WithCustomIdColumn(ManyToManyRelationshipBuilder<TModel> manyToManyRelationshipBuilder) {
               mManyToManyRelationshipBuilder = manyToManyRelationshipBuilder;
             }
 
