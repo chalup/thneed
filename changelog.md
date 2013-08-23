@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.3 *(2013-08-23)*
+----------------------------
+
+ * Fixed builder API for many-to-many relationships with custom ID columns.
+
 Version 0.2 *(2013-08-22)*
 ----------------------------
 
