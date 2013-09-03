@@ -36,9 +36,9 @@ class TestData {
   public interface ModelInterface {
   }
 
-  public static abstract class PolyModel implements ModelInterface, PolymorphicType<ModelInterface, PolyModel> {
+  public static abstract class PolyModel implements ModelInterface, PolymorphicType<PolyModel> {
     @Override
-    public PolyModel getModel() {
+    public PolyModel self() {
       return this;
     }
   }

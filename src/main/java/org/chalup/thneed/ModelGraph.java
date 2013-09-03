@@ -232,12 +232,12 @@ public class ModelGraph<TModel> {
             return mRelationshipBuilder.references(model);
           }
 
-          public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
             return mRelationshipBuilder.references(models);
           }
         }
 
-        public PolymorphicColumnSelector<RelationshipAdder<TModel>> references(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+        public PolymorphicColumnSelector<RelationshipAdder<TModel>> references(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
           return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
             @Override
             public RelationshipAdder<TModel> by(String typeColumnName, String idColumnName) {
@@ -264,7 +264,7 @@ public class ModelGraph<TModel> {
             return mRelationshipBuilder.links(model);
           }
 
-          public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> in(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
             return mRelationshipBuilder.links(models);
           }
         }
@@ -279,7 +279,7 @@ public class ModelGraph<TModel> {
           };
         }
 
-        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> links(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+        public PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>> links(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
           return new PolymorphicColumnSelector<ManyToManyRelationshipBuilder<TModel>>() {
 
             @Override
@@ -318,7 +318,7 @@ public class ModelGraph<TModel> {
               return mManyToManyRelationshipBuilder.with(model);
             }
 
-            public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+            public PolymorphicColumnSelector<RelationshipAdder<TModel>> in(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
               return mManyToManyRelationshipBuilder.with(models);
             }
           }
@@ -337,7 +337,7 @@ public class ModelGraph<TModel> {
             };
           }
 
-          public PolymorphicColumnSelector<RelationshipAdder<TModel>> with(final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> models) {
+          public PolymorphicColumnSelector<RelationshipAdder<TModel>> with(final ImmutableList<? extends PolymorphicType<? extends TModel>> models) {
             return new PolymorphicColumnSelector<RelationshipAdder<TModel>>() {
 
               @Override

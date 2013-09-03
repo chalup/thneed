@@ -16,7 +16,7 @@
 
 package org.chalup.thneed;
 
-public interface PolymorphicType<TModel, TSelf extends PolymorphicType<TModel, TSelf>> {
-  TModel getModel();
+public interface PolymorphicType<TSelf extends PolymorphicType<TSelf>> {
+  TSelf self();
   String getModelName();
 }

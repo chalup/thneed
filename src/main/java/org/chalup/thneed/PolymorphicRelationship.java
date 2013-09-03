@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableList;
 public class PolymorphicRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
-  public final ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> mTypes;
+  public final ImmutableList<? extends PolymorphicType<? extends TModel>> mTypes;
   public final String mPolymorphicModelIdColumn;
   public final String mTypeColumnName;
   public final String mIdColumnName;
 
-  PolymorphicRelationship(TModel model, ImmutableList<? extends PolymorphicType<TModel, ? extends TModel>> types, String polymorphicModelIdColumn, String typeColumnName, String idColumnName) {
+  PolymorphicRelationship(TModel model, ImmutableList<? extends PolymorphicType<? extends TModel>> types, String polymorphicModelIdColumn, String typeColumnName, String idColumnName) {
     mModel = model;
     mTypes = types;
     mPolymorphicModelIdColumn = polymorphicModelIdColumn;
@@ -42,9 +42,9 @@ public class PolymorphicRelationship<TModel> implements Relationship<TModel> {
   public ImmutableList<TModel> getPolymorphicModels() {
     ImmutableList.Builder<TModel> builder = ImmutableList.builder();
 
-    ImmutableList<? extends PolymorphicType<? extends TModel, ? extends TModel>> types = mTypes;
-    for (PolymorphicType<? extends TModel, ? extends TModel> type : types) {
-      builder.add(type.getModel());
+    ImmutableList<? extends PolymorphicType<? extends TModel>> types = mTypes;
+    for (PolymorphicType<? extends TModel> type : types) {
+      builder.add((TModel) type.self());
     }
 
     return builder.build();
