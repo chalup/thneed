@@ -102,7 +102,7 @@ public class ModelGraph<TModel> {
         mRelationships.add(relationship);
         mModels.add(relationship.mModel);
 
-        mModels.addAll(relationship.getPolymorphicModels());
+        mModels.addAll(relationship.mPolymorphicModels.values());
       }
     };
 

@@ -17,36 +17,31 @@
 package org.chalup.thneed;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class PolymorphicRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
-  public final ImmutableList<? extends PolymorphicType<? extends TModel>> mTypes;
+  public final ImmutableMap<String, TModel> mPolymorphicModels;
   public final String mPolymorphicModelIdColumn;
   public final String mTypeColumnName;
   public final String mIdColumnName;
 
   PolymorphicRelationship(TModel model, ImmutableList<? extends PolymorphicType<? extends TModel>> types, String polymorphicModelIdColumn, String typeColumnName, String idColumnName) {
     mModel = model;
-    mTypes = types;
     mPolymorphicModelIdColumn = polymorphicModelIdColumn;
     mTypeColumnName = typeColumnName;
     mIdColumnName = idColumnName;
+
+    ImmutableMap.Builder<String, TModel> builder = ImmutableMap.builder();
+    for (PolymorphicType<? extends TModel> type : types) {
+      builder.put(type.getModelName(), (TModel) type.self());
+    }
+    mPolymorphicModels = builder.build();
   }
 
   @Override
   public void accept(RelationshipVisitor<? super TModel> visitor) {
     visitor.visit(this);
-  }
-
-  public ImmutableList<TModel> getPolymorphicModels() {
-    ImmutableList.Builder<TModel> builder = ImmutableList.builder();
-
-    ImmutableList<? extends PolymorphicType<? extends TModel>> types = mTypes;
-    for (PolymorphicType<? extends TModel> type : types) {
-      builder.add((TModel) type.self());
-    }
-
-    return builder.build();
   }
 }

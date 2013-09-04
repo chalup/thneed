@@ -65,7 +65,7 @@ public class PolymorphicTest {
 
     verify(mockVisitor).visit(captor.capture());
     PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mTypes).contains(LEAD, DEAL, CONTACT);
+    assertThat(relationship.mPolymorphicModels.values()).contains(LEAD, DEAL, CONTACT);
     assertThat(relationship.mModel).isEqualTo(TASK);
     assertThat(relationship.mTypeColumnName).isEqualTo(TASKABLE_TYPE);
     assertThat(relationship.mIdColumnName).isEqualTo(TASKABLE_ID);
