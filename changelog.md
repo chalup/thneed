@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.4 *(2013-09-04)*
+----------------------------
+
+ * Simplified polymorphic relationship API.
+
 Version 0.3 *(2013-08-23)*
 ----------------------------
 
