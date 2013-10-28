@@ -16,6 +16,8 @@
 
 package org.chalup.thneed;
 
+import com.google.common.base.Objects;
+
 public class OneToManyRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
@@ -33,5 +35,23 @@ public class OneToManyRelationship<TModel> implements Relationship<TModel> {
   @Override
   public void accept(RelationshipVisitor<? super TModel> visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mModel, mReferencedModel, mReferencedModelIdColumn, mLinkedByColumn);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    OneToManyRelationship that = (OneToManyRelationship) o;
+
+    return Objects.equal(that.mModel, mModel) &&
+        Objects.equal(that.mReferencedModel, mReferencedModel) &&
+        Objects.equal(that.mReferencedModelIdColumn, mReferencedModelIdColumn) &&
+        Objects.equal(that.mLinkedByColumn, mLinkedByColumn);
   }
 }

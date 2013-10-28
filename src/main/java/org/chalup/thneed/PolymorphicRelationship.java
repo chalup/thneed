@@ -16,6 +16,7 @@
 
 package org.chalup.thneed;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -43,5 +44,23 @@ public class PolymorphicRelationship<TModel> implements Relationship<TModel> {
   @Override
   public void accept(RelationshipVisitor<? super TModel> visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mModel, mPolymorphicModels, mPolymorphicModelIdColumn, mTypeColumnName, mIdColumnName);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    final PolymorphicRelationship other = (PolymorphicRelationship) o;
+    return Objects.equal(this.mModel, other.mModel) &&
+        Objects.equal(this.mPolymorphicModels, other.mPolymorphicModels) &&
+        Objects.equal(this.mPolymorphicModelIdColumn, other.mPolymorphicModelIdColumn) &&
+        Objects.equal(this.mTypeColumnName, other.mTypeColumnName) &&
+        Objects.equal(this.mIdColumnName, other.mIdColumnName);
   }
 }

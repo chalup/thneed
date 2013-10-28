@@ -16,6 +16,8 @@
 
 package org.chalup.thneed;
 
+import com.google.common.base.Objects;
+
 public class ManyToManyRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
@@ -31,5 +33,22 @@ public class ManyToManyRelationship<TModel> implements Relationship<TModel> {
   @Override
   public void accept(RelationshipVisitor<? super TModel> visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mModel, mLeftRelationship, mRightRelationship);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ManyToManyRelationship that = (ManyToManyRelationship) o;
+
+    return Objects.equal(that.mLeftRelationship, mLeftRelationship) &&
+        Objects.equal(that.mRightRelationship, mRightRelationship) &&
+        Objects.equal(that.mModel, mModel);
   }
 }

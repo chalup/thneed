@@ -16,6 +16,8 @@
 
 package org.chalup.thneed;
 
+import com.google.common.base.Objects;
+
 public class RecursiveModelRelationship<TModel> implements Relationship<TModel> {
 
   public final TModel mModel;
@@ -31,5 +33,22 @@ public class RecursiveModelRelationship<TModel> implements Relationship<TModel> 
   @Override
   public void accept(RelationshipVisitor<? super TModel> visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mModel, mModelIdColumn, mGroupByColumn);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    RecursiveModelRelationship that = (RecursiveModelRelationship) o;
+
+    return Objects.equal(that.mGroupByColumn, mGroupByColumn) &&
+        Objects.equal(that.mModelIdColumn, mModelIdColumn) &&
+        Objects.equal(that.mModel, mModel);
   }
 }
