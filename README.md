@@ -97,7 +97,7 @@ Download [jar](http://repository.sonatype.org/service/local/artifact/maven/redir
 <dependency>
   <groupId>org.chalup.thneed</groupId>
   <artifactId>thneed</artifactId>
-  <version>0.2</version>
+  <version>0.5</version>
 </dependency>
 ```
 

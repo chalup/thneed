@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.5 *(2013-10-29)*
+----------------------------
+
+ * Utility methods for defining special cases for your visitors.
+
 Version 0.4 *(2013-09-04)*
 ----------------------------
 
