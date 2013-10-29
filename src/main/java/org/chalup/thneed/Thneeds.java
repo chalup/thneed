@@ -78,6 +78,37 @@ public final class Thneeds {
       return this;
     }
 
+    private static final RelationshipVisitor<Object> NO_OP_VISITOR = new RelationshipVisitor<Object>() {
+      @Override
+      public void visit(OneToManyRelationship<?> relationship) {
+        // no op
+      }
+
+      @Override
+      public void visit(OneToOneRelationship<?> relationship) {
+        // no op
+      }
+
+      @Override
+      public void visit(RecursiveModelRelationship<?> relationship) {
+        // no op
+      }
+
+      @Override
+      public void visit(ManyToManyRelationship<?> relationship) {
+        // no op
+      }
+
+      @Override
+      public void visit(PolymorphicRelationship<?> relationship) {
+        // no op
+      }
+    };
+
+    public RelationshipsSpecialCaseBuilder<TModel> exclude(ModelGraph<TModel> subGraph) {
+      return plus(subGraph, NO_OP_VISITOR);
+    }
+
     public void process() {
       for (Entry<Relationship<? extends TModel>, RelationshipVisitor<? super TModel>> entry : mCases.entrySet()) {
         entry.getKey().accept(entry.getValue());

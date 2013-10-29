@@ -89,4 +89,31 @@ public class SpecialRelationshipCasesTest {
     assertThat(relationshipHandledInSpecialWay.mModel).isEqualTo(DEAL);
     assertThat(relationshipHandledInSpecialWay.mReferencedModel).isEqualTo(CONTACT);
   }
+
+  @Test
+  public void shouldAllowExcludingRelationshipsFromVisiting() throws Exception {
+    ModelGraph<ModelInterface> fullModelGraph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
+        .where()
+        .the(DEAL).references(CONTACT).by(CONTACT_ID)
+        .the(TAGGING).references(TAG).by(TAG_ID)
+        .build();
+
+    ModelGraph<ModelInterface> excludedGraph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
+        .where()
+        .the(DEAL).references(CONTACT).by(CONTACT_ID)
+        .build();
+
+    Thneeds
+        .with(fullModelGraph, defaultVisitor)
+        .exclude(excludedGraph)
+        .process();
+
+    verify(defaultVisitor).visit(defaultCasesCaptor.capture());
+    assertThat(defaultCasesCaptor.getAllValues()).hasSize(1);
+    OneToManyRelationship<ModelInterface> relationshipHandledInDefaultWay = defaultCasesCaptor.getValue();
+    assertThat(relationshipHandledInDefaultWay.mModel).isEqualTo(TAGGING);
+    assertThat(relationshipHandledInDefaultWay.mReferencedModel).isEqualTo(TAG);
+  }
 }
