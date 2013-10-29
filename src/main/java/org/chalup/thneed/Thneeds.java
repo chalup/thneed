@@ -11,14 +11,14 @@ public final class Thneeds {
   private Thneeds() {
   }
 
-  public static <TModel> RelationshipsSpecialCaseBuilder<TModel> with(ModelGraph<TModel> modelGraph, RelationshipVisitor<? super TModel> visitor) {
+  public static <TModel> RelationshipsSpecialCaseBuilder<TModel> with(ModelGraph<? extends TModel> modelGraph, RelationshipVisitor<? super TModel> visitor) {
     return new RelationshipsSpecialCaseBuilder<TModel>(modelGraph, visitor);
   }
 
   public static class RelationshipsSpecialCaseBuilder<TModel> {
     private final Map<Relationship<? extends TModel>, RelationshipVisitor<? super TModel>> mCases = Maps.newHashMap();
 
-    public RelationshipsSpecialCaseBuilder(ModelGraph<TModel> modelGraph, final RelationshipVisitor<? super TModel> visitor) {
+    public RelationshipsSpecialCaseBuilder(ModelGraph<? extends TModel> modelGraph, final RelationshipVisitor<? super TModel> visitor) {
       modelGraph.accept(new RelationshipVisitor<TModel>() {
         @Override
         public void visit(OneToManyRelationship<? extends TModel> relationship) {
@@ -47,7 +47,7 @@ public final class Thneeds {
       });
     }
 
-    public RelationshipsSpecialCaseBuilder<TModel> plus(ModelGraph<TModel> subGraph, final RelationshipVisitor<? super TModel> visitor) {
+    public RelationshipsSpecialCaseBuilder<TModel> plus(ModelGraph<? extends TModel> subGraph, final RelationshipVisitor<? super TModel> visitor) {
       subGraph.accept(new RelationshipVisitor<TModel>() {
         @Override
         public void visit(OneToManyRelationship<? extends TModel> relationship) {
@@ -105,7 +105,7 @@ public final class Thneeds {
       }
     };
 
-    public RelationshipsSpecialCaseBuilder<TModel> exclude(ModelGraph<TModel> subGraph) {
+    public RelationshipsSpecialCaseBuilder<TModel> exclude(ModelGraph<? extends TModel> subGraph) {
       return plus(subGraph, NO_OP_VISITOR);
     }
 
@@ -116,14 +116,14 @@ public final class Thneeds {
     }
   }
 
-  public static <TModel> ModelsSpecialCaseBuilder<TModel> with(ModelGraph<TModel> modelGraph, ModelVisitor<? super TModel> visitor) {
+  public static <TModel> ModelsSpecialCaseBuilder<TModel> with(ModelGraph<? extends TModel> modelGraph, ModelVisitor<? super TModel> visitor) {
     return new ModelsSpecialCaseBuilder<TModel>(modelGraph, visitor);
   }
 
   public static class ModelsSpecialCaseBuilder<TModel> {
     private final Map<TModel, ModelVisitor<? super TModel>> mCases = Maps.newHashMap();
 
-    public ModelsSpecialCaseBuilder(ModelGraph<TModel> modelGraph, final ModelVisitor<? super TModel> visitor) {
+    public ModelsSpecialCaseBuilder(ModelGraph<? extends TModel> modelGraph, final ModelVisitor<? super TModel> visitor) {
       modelGraph.accept(new ModelVisitor<TModel>() {
         @Override
         public void visit(TModel model) {
