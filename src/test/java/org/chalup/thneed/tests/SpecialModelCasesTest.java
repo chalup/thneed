@@ -22,6 +22,8 @@ import static org.chalup.thneed.tests.TestData.Models.TASK;
 import static org.chalup.thneed.tests.TestData._ID;
 import static org.mockito.Mockito.*;
 
+import com.google.common.collect.Lists;
+
 import org.chalup.thneed.ModelGraph;
 import org.chalup.thneed.ModelVisitor;
 import org.chalup.thneed.Thneeds;
@@ -52,14 +54,9 @@ public class SpecialModelCasesTest {
         .with(CONTACT)
         .build();
 
-    ModelGraph<ModelInterface> specialCasesGraph = ModelGraph.of(ModelInterface.class)
-        .identifiedByDefault().by(_ID)
-        .with(TASK)
-        .build();
-
     Thneeds
         .with(fullModelGraph, defaultVisitor)
-        .plus(specialCasesGraph, specialCaseVisitor)
+        .plus(Lists.newArrayList(TASK), specialCaseVisitor)
         .process();
 
     verify(defaultVisitor).visit(CONTACT);
@@ -75,13 +72,8 @@ public class SpecialModelCasesTest {
         .with(CONTACT)
         .build();
 
-    ModelGraph<ModelInterface> specialCasesGraph = ModelGraph.of(ModelInterface.class)
-        .identifiedByDefault().by(_ID)
-        .with(DEAL)
-        .build();
-
     Thneeds
         .with(fullModelGraph, defaultVisitor)
-        .plus(specialCasesGraph, specialCaseVisitor);
+        .plus(Lists.newArrayList(DEAL), specialCaseVisitor);
   }
 }

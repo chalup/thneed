@@ -3,6 +3,7 @@ package org.chalup.thneed;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -100,14 +101,11 @@ public final class Thneeds {
       });
     }
 
-    public ModelsSpecialCaseBuilder<TModel> plus(ModelGraph<? extends TModel> subGraph, final ModelVisitor<TModel> visitor) {
-      subGraph.accept(new ModelVisitor<TModel>() {
-        @Override
-        public void visit(TModel model) {
-          ModelVisitor<TModel> oldVisitor = mCases.put(model, visitor);
-          Preconditions.checkState(oldVisitor != null);
-        }
-      });
+    public ModelsSpecialCaseBuilder<TModel> plus(List<? extends TModel> models, final ModelVisitor<TModel> visitor) {
+      for (TModel model : models) {
+        ModelVisitor<TModel> oldVisitor = mCases.put(model, visitor);
+        Preconditions.checkState(oldVisitor != null);
+      }
 
       return this;
     }
