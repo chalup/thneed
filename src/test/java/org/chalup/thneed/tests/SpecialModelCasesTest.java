@@ -64,6 +64,23 @@ public class SpecialModelCasesTest {
     verify(specialCaseVisitor).visit(TASK);
   }
 
+  @Test
+  public void shouldAllowExcludingModelsFromVisiting() throws Exception {
+    ModelGraph<ModelInterface> fullModelGraph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
+        .with(TASK)
+        .with(CONTACT)
+        .build();
+
+    Thneeds
+        .with(fullModelGraph, defaultVisitor)
+        .exclude(Lists.newArrayList(TASK))
+        .process();
+
+    verify(defaultVisitor).visit(CONTACT);
+    verify(defaultVisitor, never()).visit(TASK);
+  }
+
   @Test(expected = IllegalStateException.class)
   public void shouldNotAllowSpecifyingSpecialCaseForOutsideOfMainGraph() throws Exception {
     ModelGraph<ModelInterface> fullModelGraph = ModelGraph.of(ModelInterface.class)

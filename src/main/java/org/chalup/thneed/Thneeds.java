@@ -141,6 +141,17 @@ public final class Thneeds {
       return this;
     }
 
+    private static final ModelVisitor<Object> NO_OP_VISITOR = new ModelVisitor<Object>() {
+      @Override
+      public void visit(Object model) {
+        // no op
+      }
+    };
+
+    public ModelsSpecialCaseBuilder<TModel> exclude(List<? extends TModel> models) {
+      return plus(models, NO_OP_VISITOR);
+    }
+
     public void process() {
       for (Entry<TModel, ModelVisitor<? super TModel>> entry : mCases.entrySet()) {
         entry.getValue().visit(entry.getKey());
