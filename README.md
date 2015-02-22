@@ -1,5 +1,5 @@
 Thneed
-========
+======
 
 > *This thing is a Thneed.*  
 > *A Thneed's a Fine-Something-That-All-People-Need!*  
@@ -75,38 +75,24 @@ The nice thing about the Visitor pattern is that you can define as many differen
 
 I'm very curious what problems can be solved with this approach, so please let me know how do you use the Thneed!
 
+Usage
+=====
+Just add the dependency to your `build.gradle`:
+
+```groovy
+dependencies {
+    compile 'org.chalup.thneed:thneed:0.6'
+}
+```
+
 Caveats
--------
+=======
 
 * The API is subject to **heavy** change. This is more of a draft of the proof of concept than a production ready library.
 * The Visitors from the code snippets above are not implemented anywhere (yet). They are just names suggesting how you can use the information about data model relationships to reduce boilerplate code.
 
-Building
---------
-This is standard maven project. To build it just execute:
-```shell
-mvn clean package
-```
-in directory with pom.xml.
-
-minSdkVersion = 10
-------------------
-Thneed is compatible with Android 2.3 and newer.
-
-Download
---------
-Download [jar](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.chalup.thneed&a=thneed&v=LATEST) or add the dependency to your pom.xml:
-
-```xml
-<dependency>
-  <groupId>org.chalup.thneed</groupId>
-  <artifactId>thneed</artifactId>
-  <version>0.5</version>
-</dependency>
-```
-
 License
--------
+=======
 
     Copyright (C) 2013 Jerzy Chalupski
 
