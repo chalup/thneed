@@ -17,20 +17,15 @@
 package org.chalup.thneed.tests;
 
 import static org.chalup.thneed.tests.TestData.CONTACT;
+import static org.chalup.thneed.tests.TestData.CONTACT_ID;
 import static org.chalup.thneed.tests.TestData.DEAL;
 import static org.chalup.thneed.tests.TestData.ID;
-import static org.chalup.thneed.tests.TestData.LEAD;
-import static org.chalup.thneed.tests.TestData.Models.TASK;
-import static org.chalup.thneed.tests.TestData.TASKABLE_ID;
-import static org.chalup.thneed.tests.TestData.TASKABLE_TYPE;
 import static org.chalup.thneed.tests.TestData._ID;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.google.common.collect.ImmutableList;
-
 import org.chalup.thneed.ModelGraph;
-import org.chalup.thneed.PolymorphicRelationship;
+import org.chalup.thneed.OneToManyRelationship;
 import org.chalup.thneed.RelationshipVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
@@ -40,7 +35,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class PolymorphicTest {
+public class OneToManyTest {
 
   @Before
   public void init() {
@@ -51,25 +46,26 @@ public class PolymorphicTest {
   RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<PolymorphicRelationship<ModelInterface>> captor;
+  ArgumentCaptor<OneToManyRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(TASK).references(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
+        .the(DEAL)
+        .references(CONTACT)
+        .by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mPolymorphicModels.values()).contains(LEAD, DEAL, CONTACT);
-    assertThat(relationship.mModel).isEqualTo(TASK);
-    assertThat(relationship.mTypeColumnName).isEqualTo(TASKABLE_TYPE);
-    assertThat(relationship.mIdColumnName).isEqualTo(TASKABLE_ID);
-    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(_ID);
+    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(DEAL);
+    assertThat(relationship.mReferencedModel).isEqualTo(CONTACT);
+    assertThat(relationship.mLinkedByColumn).isEqualTo(CONTACT_ID);
+    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(_ID);
   }
 
   @Test
@@ -77,13 +73,16 @@ public class PolymorphicTest {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(TASK).references(ID).in(ImmutableList.of(CONTACT, DEAL, LEAD)).by(TASKABLE_TYPE, TASKABLE_ID)
+        .the(DEAL)
+        .references(ID)
+        .in(CONTACT)
+        .by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    PolymorphicRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mPolymorphicModelIdColumn).isEqualTo(ID);
+    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(ID);
   }
 }

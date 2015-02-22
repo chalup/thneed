@@ -17,14 +17,16 @@
 package org.chalup.thneed.tests;
 
 import static org.chalup.thneed.tests.TestData.CONTACT;
-import static org.chalup.thneed.tests.TestData.CONTACT_ID;
-import static org.chalup.thneed.tests.TestData.ID;
+import static org.chalup.thneed.tests.TestData.CUSTOM_FIELD_ID;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD;
+import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD_VALUE;
+import static org.chalup.thneed.tests.TestData.SUBJECT_ID;
 import static org.chalup.thneed.tests.TestData._ID;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import org.chalup.thneed.ManyToManyRelationship;
 import org.chalup.thneed.ModelGraph;
-import org.chalup.thneed.RecursiveModelRelationship;
 import org.chalup.thneed.RelationshipVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
@@ -34,7 +36,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class RecursiveModelTest {
+public class ManyToManyTest {
 
   @Before
   public void init() {
@@ -45,37 +47,22 @@ public class RecursiveModelTest {
   RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<RecursiveModelRelationship<ModelInterface>> captor;
+  ArgumentCaptor<ManyToManyRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(CONTACT).groupsOther().by(CONTACT_ID)
+        .the(CUSTOM_FIELD_VALUE)
+        .links(CONTACT).by(SUBJECT_ID)
+        .with(CUSTOM_FIELD).by(CUSTOM_FIELD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(CONTACT);
-    assertThat(relationship.mGroupByColumn).isEqualTo(CONTACT_ID);
-    assertThat(relationship.mModelIdColumn).isEqualTo(_ID);
-  }
-
-  @Test
-  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
-    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
-        .identifiedByDefault().by(_ID)
-        .where()
-        .the(CONTACT).identified().by(ID).groupsOther().by(CONTACT_ID)
-        .build();
-
-    graph.accept(mockVisitor);
-
-    verify(mockVisitor).visit(captor.capture());
-    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModelIdColumn).isEqualTo(ID);
+    ManyToManyRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(CUSTOM_FIELD_VALUE);
   }
 }

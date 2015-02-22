@@ -16,17 +16,16 @@
 
 package org.chalup.thneed.tests;
 
-import static org.chalup.thneed.tests.TestData.CONTACT;
-import static org.chalup.thneed.tests.TestData.CUSTOM_FIELD_ID;
-import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD;
-import static org.chalup.thneed.tests.TestData.Models.CUSTOM_FIELD_VALUE;
-import static org.chalup.thneed.tests.TestData.SUBJECT_ID;
+import static org.chalup.thneed.tests.TestData.ID;
+import static org.chalup.thneed.tests.TestData.LEAD;
+import static org.chalup.thneed.tests.TestData.LEAD_ID;
+import static org.chalup.thneed.tests.TestData.Models.CONTACT_DATA;
 import static org.chalup.thneed.tests.TestData._ID;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import org.chalup.thneed.ManyToManyRelationship;
 import org.chalup.thneed.ModelGraph;
+import org.chalup.thneed.OneToOneRelationship;
 import org.chalup.thneed.RelationshipVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
@@ -36,7 +35,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class ManyToManyTest {
+public class OneToOneTest {
 
   @Before
   public void init() {
@@ -47,22 +46,38 @@ public class ManyToManyTest {
   RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<ManyToManyRelationship<ModelInterface>> captor;
+  ArgumentCaptor<OneToOneRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(CUSTOM_FIELD_VALUE)
-        .links(CONTACT).by(SUBJECT_ID)
-        .with(CUSTOM_FIELD).by(CUSTOM_FIELD_ID)
+        .the(LEAD).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    ManyToManyRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(CUSTOM_FIELD_VALUE);
+    OneToOneRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(LEAD);
+    assertThat(relationship.mLinkedModel).isEqualTo(CONTACT_DATA);
+    assertThat(relationship.mLinkedByColumn).isEqualTo(LEAD_ID);
+    assertThat(relationship.mParentModelIdColumn).isEqualTo(_ID);
+  }
+
+  @Test
+  public void shouldUseRelationshipSpecificIdColumn() throws Exception {
+    ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
+        .identifiedByDefault().by(_ID)
+        .where()
+        .the(LEAD).identified().by(ID).mayHave(CONTACT_DATA).linked().by(LEAD_ID)
+        .build();
+
+    graph.accept(mockVisitor);
+
+    verify(mockVisitor).visit(captor.capture());
+    OneToOneRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mParentModelIdColumn).isEqualTo(ID);
   }
 }

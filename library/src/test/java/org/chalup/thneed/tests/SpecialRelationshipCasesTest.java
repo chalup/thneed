@@ -23,7 +23,7 @@ import static org.chalup.thneed.tests.TestData.Models.TAG;
 import static org.chalup.thneed.tests.TestData.Models.TAGGING;
 import static org.chalup.thneed.tests.TestData.TAG_ID;
 import static org.chalup.thneed.tests.TestData._ID;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.chalup.thneed.ModelGraph;

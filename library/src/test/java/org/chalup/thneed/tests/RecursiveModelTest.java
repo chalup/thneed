@@ -18,14 +18,13 @@ package org.chalup.thneed.tests;
 
 import static org.chalup.thneed.tests.TestData.CONTACT;
 import static org.chalup.thneed.tests.TestData.CONTACT_ID;
-import static org.chalup.thneed.tests.TestData.DEAL;
 import static org.chalup.thneed.tests.TestData.ID;
 import static org.chalup.thneed.tests.TestData._ID;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.chalup.thneed.ModelGraph;
-import org.chalup.thneed.OneToManyRelationship;
+import org.chalup.thneed.RecursiveModelRelationship;
 import org.chalup.thneed.RelationshipVisitor;
 import org.chalup.thneed.tests.TestData.ModelInterface;
 import org.junit.Before;
@@ -35,7 +34,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class OneToManyTest {
+public class RecursiveModelTest {
 
   @Before
   public void init() {
@@ -46,26 +45,23 @@ public class OneToManyTest {
   RelationshipVisitor<ModelInterface> mockVisitor;
 
   @Captor
-  ArgumentCaptor<OneToManyRelationship<ModelInterface>> captor;
+  ArgumentCaptor<RecursiveModelRelationship<ModelInterface>> captor;
 
   @Test
   public void shouldVisitEveryRelationship() throws Exception {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(DEAL)
-        .references(CONTACT)
-        .by(CONTACT_ID)
+        .the(CONTACT).groupsOther().by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mModel).isEqualTo(DEAL);
-    assertThat(relationship.mReferencedModel).isEqualTo(CONTACT);
-    assertThat(relationship.mLinkedByColumn).isEqualTo(CONTACT_ID);
-    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(_ID);
+    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModel).isEqualTo(CONTACT);
+    assertThat(relationship.mGroupByColumn).isEqualTo(CONTACT_ID);
+    assertThat(relationship.mModelIdColumn).isEqualTo(_ID);
   }
 
   @Test
@@ -73,16 +69,13 @@ public class OneToManyTest {
     ModelGraph<ModelInterface> graph = ModelGraph.of(ModelInterface.class)
         .identifiedByDefault().by(_ID)
         .where()
-        .the(DEAL)
-        .references(ID)
-        .in(CONTACT)
-        .by(CONTACT_ID)
+        .the(CONTACT).identified().by(ID).groupsOther().by(CONTACT_ID)
         .build();
 
     graph.accept(mockVisitor);
 
     verify(mockVisitor).visit(captor.capture());
-    OneToManyRelationship<ModelInterface> relationship = captor.getValue();
-    assertThat(relationship.mReferencedModelIdColumn).isEqualTo(ID);
+    RecursiveModelRelationship<ModelInterface> relationship = captor.getValue();
+    assertThat(relationship.mModelIdColumn).isEqualTo(ID);
   }
 }
