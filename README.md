@@ -81,7 +81,7 @@ Just add the dependency to your `build.gradle`:
 
 ```groovy
 dependencies {
-    compile 'org.chalup.thneed:thneed:0.6'
+    compile 'org.chalup.thneed:thneed:0.7'
 }
 ```
 

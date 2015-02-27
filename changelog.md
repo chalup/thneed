@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 0.7 *(2015-02-27)*
+----------------------------
+
+ * Migrate project to gradle
+ * Add `models` package with few useful definitions
+
 Version 0.6 *(2014-02-25)*
 ----------------------------
 
